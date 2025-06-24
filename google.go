@@ -69,5 +69,5 @@ func main() {
 	timeElapsed := time.Since(start)
 
 	fmt.Println(golangQuery)
-	fmt.Println(timeElapsed)
+	fmt.Println("Time taken:", timeElapsed)
 }
