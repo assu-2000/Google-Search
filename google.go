@@ -26,12 +26,19 @@ func Google(query string) (results []Result) {
 	c := make(chan Result)
 
 	go func() { r := Web(query); c <- r }()
-	go func() { c <- Image(query) }()
+	go func() { c <- Image(query) }() // fan-in pattern
 	go func() { c <- Video(query) }()
 
+	timeout := time.After(80 * time.Millisecond) // timeout for the whole process
+
 	for range 3 {
-		result := <-c
-		results = append(results, result)
+		select {
+		case result := <-c:
+			results = append(results, result)
+		case <-timeout:
+			fmt.Println("Taking so long")
+			return
+		}
 	}
 
 	return
